@@ -10,6 +10,7 @@ import argparse
 from pathlib import Path
 from dotenv import load_dotenv
 from openai import OpenAI
+from json_to_voice import json_to_voice
 
 # Загружаем переменные окружения из файла .env
 load_dotenv()
@@ -191,6 +192,11 @@ def main():
         type=str,
         help="Путь к файлу изображения почтовой марки"
     )
+    parser.add_argument(
+        "--tts",
+        action="store_true",
+        help="Генерировать голосовое описание марки после анализа"
+    )
     
     args = parser.parse_args()
     
@@ -215,6 +221,16 @@ def main():
             json.dump(result_json, f, ensure_ascii=False, indent=2)
         
         print(f"\nРезультат сохранен в: {output_file}")
+        
+        # Генерация голосового описания, если указан флаг --tts
+        if args.tts:
+            try:
+                print("\nГенерирую голосовое описание...")
+                script_file, audio_file = json_to_voice(str(output_file), str(output_dir))
+                print(f"✓ Текст озвучки сохранен: {script_file}")
+                print(f"✓ Аудиофайл сохранен: {audio_file}")
+            except Exception as e:
+                print(f"Предупреждение: Не удалось сгенерировать голосовое описание: {e}", file=sys.stderr)
         
     except FileNotFoundError as e:
         print(f"Ошибка: {e}", file=sys.stderr)
