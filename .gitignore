@@ -2,5 +2,5 @@ venv/
 .env
 __pycache__/
 output/*
-!output/example_result.json
+!output/result.json
 .DS_Store
